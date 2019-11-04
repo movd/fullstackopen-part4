@@ -2,8 +2,17 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const helper = require("./list_helper.test");
-
 const api = supertest(app);
+
+const Blog = require("../models/blog");
+
+beforeEach(async () => {
+  await Blog.deleteMany({});
+
+  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog));
+  const promiseArray = blogObjects.map(blog => blog.save());
+  await Promise.all(promiseArray);
+});
 
 describe("Blog list tests", () => {
   test("blogs are returned as json", async () => {
