@@ -83,6 +83,21 @@ describe("Blog list tests", () => {
     expect(createdBlog.likes).toEqual(0);
   });
 
+  test("error 400 when blog title or url is missing", async () => {
+    const newBlogNoTitleUrl = {
+      author: "Moritz"
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlogNoTitleUrl)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const { body } = await api.get("/api/blogs");
+    console.log(body[6]);
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });

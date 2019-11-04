@@ -12,11 +12,17 @@ blogsRouter.post("/", async (request, response) => {
   if (!newBlog.likes) {
     newBlog.likes = 0;
   }
+
+  // respond with 'bad request' and POST payload when 'title' or 'url' are undefined or empty
+  if (!newBlog.title || !newBlog.url) {
+    return response.status(400).json(newBlog);
+  }
+
   const blog = new Blog(newBlog);
 
   try {
     const savedBlog = await blog.save();
-    response.status(201).json(savedBlog.toJSON());
+    return response.status(201).json(savedBlog.toJSON());
   } catch (error) {
     console.error(error);
   }
