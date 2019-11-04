@@ -4,9 +4,9 @@
   "description": "My submissions for Full Stack Open 2019 part4 aka the Blog backend",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "jest --verbose",
-    "watch": "nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "watch": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint ."
   },
   "repository": {
@@ -25,9 +25,11 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
-    "mongoose": "^5.7.5"
+    "mongoose": "^5.7.5",
+    "supertest": "^4.0.2"
   },
   "devDependencies": {
+    "cross-env": "^6.0.3",
     "eslint": "^6.5.1",
     "jest": "^24.9.0",
     "nodemon": "^1.19.4"

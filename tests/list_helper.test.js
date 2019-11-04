@@ -156,3 +156,5 @@ describe("author with most likes", () => {
     expect(result).toEqual(expected);
   });
 });
+
+module.exports = { initialBlogs: blogs };
