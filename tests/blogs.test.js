@@ -60,6 +60,29 @@ describe("Blog list tests", () => {
     expect(titles).toContainEqual(newBlog.title);
   });
 
+  test("default to 0 liked if not given", async () => {
+    // Create a new blog without likes
+    const newBlogUndefinedLikes = {
+      title: "Getting started with security keys",
+      author: "Paul Stamatiou",
+      url: "https://paulstamatiou.com/getting-started-with-security-keys/"
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlogUndefinedLikes)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const response = await api.get("/api/blogs");
+    // grep newly created blog from server response
+    const createdBlog = response.body.find(blog =>
+      blog.title.includes(newBlogUndefinedLikes.title)
+    );
+    // Check if likes equal 0
+    expect(createdBlog.likes).toEqual(0);
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
