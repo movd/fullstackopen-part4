@@ -7,14 +7,18 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const mongoUrl = config.MONGODB_URI;
-mongoose
-  .connect(mongoUrl, { useNewUrlParser: true })
-  .then(() => {
+
+// Use mongoose with async/await using Immediately-invoked Function Expressions (IIFE)
+// https://stackoverflow.com/a/54892088
+
+(async () => {
+  try {
+    await mongoose.connect(mongoUrl, { useNewUrlParser: true });
     console.log("Connected to MongoDB:", mongoUrl);
-  })
-  .catch(error => {
-    console.log("error connecting to MongoDB:", error.message);
-  });
+  } catch (error) {
+    console.error("error connecting to MongoDB:", error.message);
+  }
+})();
 
 app.use(cors());
 app.use(bodyParser.json());
