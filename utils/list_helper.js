@@ -65,9 +65,9 @@ const mostLikes = blogs => {
       .value();
 
     // blogAuthorsLikes = [
-    //   { author: "Robert C. Martin", blogs: 3 },
-    //   { author: "Edsger W. Dijkstra", blogs: 2 },
-    //   { author: "Michael Chan", blogs: 1 }
+    //   { author: "Edsger W. Dijkstra", likes: 17 },
+    //   { author: "Robert C. Martin", likes: 12 },
+    //   { author: "Michael Chan", likes: 7 }
     // ];
 
     // return only the most liked author
