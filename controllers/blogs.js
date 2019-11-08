@@ -32,18 +32,40 @@ blogsRouter.get("/:id", async (request, response) => {
   // response.json(request.params.id);
   try {
     const blog = await Blog.findById(request.params.id);
-    response.json(blog);
+    response.json(blog).status(200);
   } catch (error) {
     response.status(404).end();
   }
 });
 
-// Delete Route (Ex. 4.13)
+// DELETE Route (Ex. 4.13)
 blogsRouter.delete("/:id", async (request, response) => {
   try {
     await Blog.findByIdAndDelete(request.params.id);
     response.status(204).end();
   } catch (error) {
+    response.status(400).end();
+  }
+});
+
+// PUT Route (Ex. 4.14)
+blogsRouter.put("/:id", async (request, response) => {
+  const body = request.body;
+  // Only proceed if 'likes' exists and is a number
+  if (!isNaN(body.likes)) {
+    try {
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        request.params.id,
+        {
+          likes: Number(body.likes)
+        },
+        { new: true }
+      );
+      response.json(updatedBlog.toJSON());
+    } catch (error) {
+      response.status(400).end();
+    }
+  } else {
     response.status(400).end();
   }
 });

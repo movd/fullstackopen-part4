@@ -104,9 +104,59 @@ describe("Blog list tests", () => {
     await api.delete(`/api/blogs/${id}`).expect(204);
   });
 
-  test("error 400 when wrong id is given", async () => {
+  test("delete: error 400 when wrong id is given", async () => {
     const id = "qwertzuip";
     await api.delete(`/api/blogs/${id}`).expect(400);
+  });
+
+  test("likes of a blog can be updated", async () => {
+    // Test Update of second blog:
+    const id = helper.initialBlogs[1]._id;
+    const newLikes = { likes: "1234" };
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(newLikes)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("update: error 400 when trying to update 'title', 'author' or 'url'", async () => {
+    // Test Update of second blog:
+    const id = helper.initialBlogs[1]._id;
+    const title = "Something, Something, Something, Dark Side";
+    const author = "Kirker Butler";
+    const url = "https://www.imdb.com/title/tt1329665/";
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(title)
+      .expect(400);
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(author)
+      .expect(400);
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(url)
+      .expect(400);
+  });
+
+  test("update: error 400 when trying send a string for 'likes'", async () => {
+    // Test Update of second blog:
+    const id = helper.initialBlogs[1]._id;
+    const newLikes = "nhadbsdnjkasd";
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(newLikes)
+      .expect(400);
+  });
+
+  test("update: error 400 when wrong id is given", async () => {
+    const id = "somethingsomethingdarkside";
+    await api.put(`/api/blogs/${id}`).expect(400);
   });
 
   afterAll(() => {
