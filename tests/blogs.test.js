@@ -98,6 +98,17 @@ describe("Blog list tests", () => {
     console.log(body[6]);
   });
 
+  test("a blog can be deleted", async () => {
+    // Test Delete of first blog:
+    const id = helper.initialBlogs[0]._id;
+    await api.delete(`/api/blogs/${id}`).expect(204);
+  });
+
+  test("error 400 when wrong id is given", async () => {
+    const id = "qwertzuip";
+    await api.delete(`/api/blogs/${id}`).expect(400);
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });

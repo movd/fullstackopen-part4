@@ -38,4 +38,14 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
+// Delete Route (Ex. 4.13)
+blogsRouter.delete("/:id", async (request, response) => {
+  try {
+    await Blog.findByIdAndDelete(request.params.id);
+    response.status(204).end();
+  } catch (error) {
+    response.status(400).end();
+  }
+});
+
 module.exports = blogsRouter;
