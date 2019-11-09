@@ -8,7 +8,13 @@ mongoose.set("useCreateIndex", true);
 const userSchema = mongoose.Schema({
   username: { type: String, minlength: 3, required: true, unique: true },
   name: String,
-  passwordHash: { type: String, required: true }
+  passwordHash: { type: String, required: true },
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog"
+    }
+  ]
 });
 
 userSchema.set("toJSON", {
