@@ -98,7 +98,6 @@ describe("Blog lists tests", () => {
         .expect("Content-Type", /application\/json/);
 
       const { body } = await api.get("/api/blogs");
-      console.log(body[6]);
     });
   });
 

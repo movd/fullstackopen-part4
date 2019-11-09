@@ -7,18 +7,27 @@ usersRouter.post("/", async (request, response) => {
     const body = request.body;
 
     const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(body.password, saltRounds);
+    let passwordHash;
+    if (body.password.length >= 3) {
+      passwordHash = await bcrypt.hash(body.password, saltRounds);
+    } else {
+      // validation for to short passwords
+      return response
+        .status(400)
+        .json({ error: "password must at least 3 chars" });
+    }
 
     const user = new User({
       username: body.username,
       name: body.name,
-      password: passwordHash
+      passwordHash
     });
 
     const savedUser = await user.save();
-    response.json(savedUser);
+    response.status(201).json(savedUser);
   } catch (error) {
-    console.error(error);
+    // Return error messages straight from mongoose
+    return response.status(400).json({ error: error.message });
   }
 });
 
