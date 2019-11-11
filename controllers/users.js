@@ -2,13 +2,6 @@ const bcrypt = require("bcrypt");
 const usersRouter = require("express").Router();
 const User = require("../models/user");
 
-usersRouter.get("/destroy", async (req, res) => {
-  await User.deleteMany({});
-  const users = await User.find({});
-
-  res.json(users);
-});
-
 usersRouter.post("/", async (request, response) => {
   try {
     const body = request.body;

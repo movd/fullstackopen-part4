@@ -8,16 +8,6 @@ blogsRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.get("/destroy", async (req, res) => {
-  await Blog.deleteMany({});
-  const blogs = await Blog.find({}).populate("user", {
-    username: 1,
-    name: 1
-  });
-
-  res.json(blogs);
-});
-
 blogsRouter.post("/", async (request, response) => {
   let newBlog = request.body;
   const token = request.token;
@@ -39,7 +29,7 @@ blogsRouter.post("/", async (request, response) => {
       return response.status(400).json(newBlog);
     }
 
-    // Add any user (Ex. 4.19)
+    // get user sent in token from db
     const user = await User.findById(decodedToken.id);
 
     const blog = new Blog({ ...newBlog, user: user._id });
@@ -65,12 +55,31 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
-// DELETE Route (Ex. 4.13)
+// DELETE Route
 blogsRouter.delete("/:id", async (request, response) => {
+  console.log(request.params.id);
+  const token = request.token;
+
   try {
-    await Blog.findByIdAndDelete(request.params.id);
-    response.status(204).end();
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: "token missing or invalid" });
+    }
+
+    const foundBlog = await Blog.findById(request.params.id);
+    const userIdFromDb = foundBlog.user.toString();
+
+    if (decodedToken.id === userIdFromDb) {
+      await Blog.findByIdAndDelete(request.params.id);
+      response.status(204).end();
+    } else {
+      return response.status(401).json({ error: "wrong user" });
+    }
   } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      return response.status(401).json({ error: "invalid token" });
+    }
     response.status(400).end();
   }
 });
