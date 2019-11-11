@@ -18,17 +18,9 @@ blogsRouter.get("/destroy", async (req, res) => {
   res.json(blogs);
 });
 
-const getTokenFrom = request => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    return authorization.substring(7);
-  }
-  return null;
-};
-
 blogsRouter.post("/", async (request, response) => {
   let newBlog = request.body;
-  const token = getTokenFrom(request);
+  const token = request.token;
 
   try {
     const decodedToken = jwt.verify(token, process.env.SECRET);
