@@ -1,4 +1,5 @@
 const blogsRouter = require("express").Router();
+const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog");
 const User = require("../models/user");
 
@@ -17,30 +18,48 @@ blogsRouter.get("/destroy", async (req, res) => {
   res.json(blogs);
 });
 
+const getTokenFrom = request => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    return authorization.substring(7);
+  }
+  return null;
+};
+
 blogsRouter.post("/", async (request, response) => {
   let newBlog = request.body;
-  // Set likes to zero if undefined
-  if (!newBlog.likes) {
-    newBlog.likes = 0;
-  }
-
-  // respond with 'bad request' and POST payload when 'title' or 'url' are undefined or empty
-  if (!newBlog.title || !newBlog.url) {
-    return response.status(400).json(newBlog);
-  }
-
-  // Add any user (Ex. 4.17)
-  const user = await User.findOne({});
-
-  const blog = new Blog({ ...newBlog, user: user._id });
+  const token = getTokenFrom(request);
 
   try {
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: "token missing or invalid" });
+    }
+
+    // Set likes to zero if undefined
+    if (!newBlog.likes) {
+      newBlog.likes = 0;
+    }
+
+    // respond with 'bad request' and POST payload when 'title' or 'url' are undefined or empty
+    if (!newBlog.title || !newBlog.url) {
+      return response.status(400).json(newBlog);
+    }
+
+    // Add any user (Ex. 4.19)
+    const user = await User.findById(decodedToken.id);
+
+    const blog = new Blog({ ...newBlog, user: user._id });
+
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
     return response.status(201).json(savedBlog.toJSON());
   } catch (error) {
-    console.error(error);
+    if (error.name === "JsonWebTokenError") {
+      return response.status(401).json({ error: "invalid token" });
+    }
   }
 });
 
