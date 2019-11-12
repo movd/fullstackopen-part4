@@ -8,7 +8,7 @@ blogsRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", async (request, response, next) => {
   let newBlog = request.body;
   const token = request.token;
 
@@ -39,24 +39,22 @@ blogsRouter.post("/", async (request, response) => {
     await user.save();
     return response.status(201).json(savedBlog.toJSON());
   } catch (error) {
-    if (error.name === "JsonWebTokenError") {
-      return response.status(401).json({ error: "invalid token" });
-    }
+    next(error);
   }
 });
 
-blogsRouter.get("/:id", async (request, response) => {
-  // response.json(request.params.id);
+blogsRouter.get("/:id", async (request, response, next) => {
+  console.log(request.params.id);
   try {
     const blog = await Blog.findById(request.params.id);
     response.json(blog).status(200);
   } catch (error) {
-    response.status(404).end();
+    next(error);
   }
 });
 
 // DELETE Route
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete("/:id", async (request, response, next) => {
   console.log(request.params.id);
   const token = request.token;
 
@@ -77,15 +75,12 @@ blogsRouter.delete("/:id", async (request, response) => {
       return response.status(401).json({ error: "wrong user" });
     }
   } catch (error) {
-    if (error.name === "JsonWebTokenError") {
-      return response.status(401).json({ error: "invalid token" });
-    }
-    response.status(400).end();
+    next(error);
   }
 });
 
 // PUT Route (Ex. 4.14)
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put("/:id", async (request, response, next) => {
   const body = request.body;
   // Only proceed if 'likes' exists and is a number
   if (!isNaN(body.likes)) {
@@ -99,7 +94,7 @@ blogsRouter.put("/:id", async (request, response) => {
       );
       response.json(updatedBlog.toJSON());
     } catch (error) {
-      response.status(400).end();
+      next(error);
     }
   } else {
     response.status(400).end();

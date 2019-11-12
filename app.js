@@ -2,7 +2,7 @@ const config = require("./utils/config");
 const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
-const middleware = require("./utils/middleware");
+const { tokenExtractor, errorHandler } = require("./utils/middleware");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -26,10 +26,10 @@ const mongoUrl = config.MONGODB_URI;
 
 app.use(morgan("tiny"));
 app.use(cors());
-app.use(middleware.tokenExtractor);
+app.use(tokenExtractor);
 app.use(bodyParser.json());
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
-
+app.use(errorHandler);
 module.exports = app;
