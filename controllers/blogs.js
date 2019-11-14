@@ -26,7 +26,10 @@ blogsRouter.post("/", async (request, response, next) => {
 
     // respond with 'bad request' and POST payload when 'title' or 'url' are undefined or empty
     if (!newBlog.title || !newBlog.url) {
-      return response.status(400).json(newBlog);
+      return response
+        .status(400)
+        .json({ error: "title or url missing" })
+        .end();
     }
 
     // get user sent in token from db
