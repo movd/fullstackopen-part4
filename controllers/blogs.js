@@ -84,15 +84,19 @@ blogsRouter.delete("/:id", async (request, response, next) => {
 
 // PUT Route (Ex. 4.14)
 blogsRouter.put("/:id", async (request, response, next) => {
-  const body = request.body;
+  const { author, title, url, likes } = request.body;
+  const blog = {
+    author,
+    title,
+    url,
+    likes
+  };
   // Only proceed if 'likes' exists and is a number
-  if (!isNaN(body.likes)) {
+  if (!isNaN(likes)) {
     try {
       const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id,
-        {
-          likes: Number(body.likes)
-        },
+        blog,
         { new: true }
       );
       response.json(updatedBlog.toJSON());
