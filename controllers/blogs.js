@@ -49,7 +49,10 @@ blogsRouter.post("/", async (request, response, next) => {
 blogsRouter.get("/:id", async (request, response, next) => {
   console.log(request.params.id);
   try {
-    const blog = await Blog.findById(request.params.id);
+    const blog = await Blog.findById(request.params.id).populate("user", {
+      username: 1,
+      name: 1
+    });
     response.json(blog).status(200);
   } catch (error) {
     next(error);
@@ -98,7 +101,7 @@ blogsRouter.put("/:id", async (request, response, next) => {
         request.params.id,
         blog,
         { new: true }
-      );
+      ).populate("user", { username: 1, name: 1 });
       response.json(updatedBlog.toJSON());
     } catch (error) {
       next(error);
